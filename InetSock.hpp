@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <strings.h>
 
 typedef enum {
   SOC_TCP,
@@ -29,6 +30,17 @@ class InetSock {
 
   inline int fd() const { return _fd; }
 
+  int bind(uint16_t hostport) {
+    struct sockaddr_in addr;
+    bzero(&addr, sizeof(struct sockaddr_in));
+
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr.sin_port = htons(hostport);
+
+    return ::bind(_fd, (const struct sockaddr*)&addr, static_cast<socklen_t>(sizeof(addr)));
+  }
+  
   int bind(const struct sockaddr_in& addr) {
     return ::bind(_fd, (const struct sockaddr*)&addr, static_cast<socklen_t>(sizeof(addr)));
   }

@@ -1,17 +1,21 @@
 #pragma once
 #include <netinet/in.h>
 
-class InetPeerTcp {
- private:
+struct InetPeerTcp {
+  inline int sum () const {
+    return _fd;
+  }
+  
   int _fd;
 };
 
-class InetPeerUdp {
+struct InetPeerUdp {
+  inline int sum () const {
+    return _addr.sin_addr.s_addr;
+  }
   
- private:
   struct sockaddr_in _addr;
 };
-
 
 
 
