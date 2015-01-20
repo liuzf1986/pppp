@@ -4,6 +4,7 @@
 #include "UdpIOExec.hpp"
 #include <memory>
 #include "RecvBufQueue.hpp"
+#include "ProcessPoll.hpp"
 
 using namespace std;
 
@@ -21,8 +22,18 @@ void notify() {
   printf("%s xxxxxxxxxxx \n", __FUNCTION__);
 }
 
+int g_proc_count = 0;
+
 struct Base {
-  
+  static PROCESS_RESULT doTask() {
+    if(g_proc_count < 10) {
+      printf("qqqqqqqqqqqqq %d\n", g_proc_count);
+      g_proc_count ++;
+      return RESULT_OK;
+    } else {
+      return RESULT_DONE;
+    }
+  }
 };
 
 int main(int argc, char *argv[])
@@ -32,6 +43,13 @@ int main(int argc, char *argv[])
   ret = sock.bind(3002);
   assert(!ret);
 
+  ProcessPoll<Base> p(5);
+
+  for(int i = 0; i < 25; i ++) {
+    usleep(500);
+    p.wakeup();    
+  }
+  
   sock.setNonBlocking(false);
   auto onread = function<void(void*, size_t, struct InetPeerUdp*)>(on_readable);
   UdpIOExec<> exec(sock.fd(), onread, nullptr);
