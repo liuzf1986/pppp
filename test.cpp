@@ -11,7 +11,6 @@ using namespace std;
 void on_readable(void* data, size_t len, struct InetPeerUdp* peer) {
   printf("on_readble === \n");
   printf("%s \n", data);
-  //  printf("%s:%d", peer->_addr)
 }
 
 void on_error(int errno) {
